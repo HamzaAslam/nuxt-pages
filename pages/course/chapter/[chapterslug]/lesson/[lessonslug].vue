@@ -33,6 +33,31 @@
 const course = useCourse();
 const route = useRoute();
 
+definePageMeta({
+  validate({ params }) {
+    const course = useCourse();
+    const chapter = course.chapters.find(
+      (chapter) => chapter.slug === params.chapterslug
+    );
+    if (!chapter) {
+      return createError({
+        statusCode: 404,
+        message: "Chapter not found",
+      });
+    }
+    const lesson = chapter.lessons.find(
+      (lesson) => lesson.slug === params.lessonslug
+    );
+    if (!lesson) {
+      return createError({
+        statusCode: 404,
+        message: "Lesson not found",
+      });
+    }
+    return true;
+  },
+});
+
 if (route.params.lessonslug === "3-typing-component-events") {
   console.log(
     route.params.parmasthatdoesnotexistwhoops.capitalizeIsNotAMethod()
@@ -62,7 +87,6 @@ useHead({
 const progress = useLocalStorage("progress", []);
 
 const isLessonComplete = computed(() => {
-  console.log(progress.value[chapter.value.number - 1]);
   if (!progress.value[chapter.value.number - 1]) {
     return false;
   }
@@ -81,6 +105,4 @@ const toggleComplete = () => {
   progress.value[chapter.value.number - 1][lesson.value.number - 1] =
     !isLessonComplete.value;
 };
-
-console.log(course);
 </script>
